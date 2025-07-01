@@ -7,6 +7,8 @@ import json
 
 from .models import AppUsageLog  # Make sure this model is defined correctly
 
+def home_view(request):
+    return render(request, "index.html")
 # Main dashboard view
 def parent_dashboard(request):
     device_status = "online"  # You can make this dynamic with ping logic

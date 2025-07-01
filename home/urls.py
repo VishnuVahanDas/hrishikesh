@@ -3,6 +3,7 @@ from . import views
 
 app_name = "home"
 urlpatterns = [
+    path("", views.home_view, name="home"),
     path('dashboard/', views.parent_dashboard, name='parent_dashboard'),
     path('api/track-usage/', views.track_usage),
     path('block-app/', views.block_app, name='block_app'),
