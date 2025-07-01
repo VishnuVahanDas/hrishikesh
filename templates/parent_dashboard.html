@@ -1,0 +1,122 @@
+<!-- templates/parent_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hrishikesh Parent Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Hrishikesh Parental Control Admin</a>
+        <div>
+            <a href="#" class="btn btn-outline-light me-2">Home</a>
+            <a href="#" class="btn btn-outline-light me-2">Usage Logs</a>
+            <a href="#" class="btn btn-outline-light me-2">App Blocker</a>
+            <a href="#" class="btn btn-outline-light">Settings</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Parental Control Dashboard</h2>
+
+    <!-- Summary -->
+    <div class="row mb-4 text-center">
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="card-title">Child Status</div>
+                <div>
+                    <span class="{% if status == 'online' %}text-success{% else %}text-danger{% endif %}">
+                        ● {{ status|capfirst }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="card-title">Screen Time</div>
+                <div>{{ screen_time }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="card-title">Top App</div>
+                <div>{{ top_app }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="card-title">Last Updated</div>
+                <div>{{ last_updated }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="card mb-4">
+        <div class="card-header">App Usage Logs (Last 24 Hours)</div>
+        <div class="card-body table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>App</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp }}</td>
+                        <td>{{ log.top_app }}</td>
+                        <td>{{ log.duration|default:"--" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-center text-muted">No usage data available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <form action="{% url 'home:block_app' %}" method="POST" class="d-flex">
+                {% csrf_token %}
+                <input type="text" name="package" class="form-control" placeholder="App Package">
+                <button class="btn btn-danger ms-2">Block App</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form action="{% url 'home:set_limit' %}" method="POST" class="d-flex">
+                {% csrf_token %}
+                <input type="time" name="limit" class="form-control">
+                <button class="btn btn-warning ms-2">Set Limit</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form action="{% url 'home:lock_device' %}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-dark w-100">Lock Device</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center mt-5 text-muted">
+    &copy; 2025 ISKCON Hrishikesh | Powered by Django & Flutter
+</footer>
+
+</body>
+</html>
