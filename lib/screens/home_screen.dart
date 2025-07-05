@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Map<String, dynamic>> _devices = [];
   bool _isLoading = true;
   List<AppUsage> _usage = [];
@@ -19,7 +19,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initDeviceLogic();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _fetchUsageStats();
+    }
   }
 
   void _initDeviceLogic() async {
@@ -27,14 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final allDevices = await ApiService.fetchDevices();
 
     const MethodChannel channel = MethodChannel('parent_control/device');
-    final bool hasPermission =
-        await channel.invokeMethod<bool>('hasUsagePermission') ?? false;
-    if (!hasPermission) {
-      const intent = AndroidIntent(
-        action: 'android.settings.USAGE_ACCESS_SETTINGS',
-      );
-      await intent.launch();
-    }
     String? currentDeviceId;
     try {
       currentDeviceId = await channel.invokeMethod<String>('getDeviceId');
@@ -42,35 +48,60 @@ class _HomeScreenState extends State<HomeScreen> {
       currentDeviceId = null;
     }
 
-    List<AppUsage> usage = [];
-    try {
-      final List<dynamic>? result =
-          await channel.invokeMethod<List<dynamic>>('getUsageStats');
-      if (result != null) {
-        usage = result
-            .map((e) => AppUsage.fromMap(Map<dynamic, dynamic>.from(e)))
-            .toList();
-        usage.sort((a, b) => b.usage.compareTo(a.usage));
-      }
-    } on PlatformException {
-      usage = [];
-    }
-
     if (currentDeviceId != null) {
-      final filtered = allDevices
-          .where((d) => d['device_id'] == currentDeviceId)
-          .toList();
+      final filtered =
+          allDevices.where((d) => d['device_id'] == currentDeviceId).toList();
       setState(() {
         _devices = filtered;
-        _usage = usage;
-        _isLoading = false;
       });
     } else {
       setState(() {
         _devices = allDevices;
-        _usage = usage;
-        _isLoading = false;
       });
+    }
+
+    await _checkUsagePermission(openSettings: true);
+    await _fetchUsageStats();
+
+    setState(() => _isLoading = false);
+  }
+
+  Future<bool> _checkUsagePermission({bool openSettings = false}) async {
+    const MethodChannel channel = MethodChannel('parent_control/device');
+    final bool hasPermission =
+        await channel.invokeMethod<bool>('hasUsagePermission') ?? false;
+    if (!hasPermission && openSettings) {
+      const intent = AndroidIntent(
+        action: 'android.settings.USAGE_ACCESS_SETTINGS',
+      );
+      await intent.launch();
+    }
+    return hasPermission;
+  }
+
+  Future<void> _fetchUsageStats() async {
+    const MethodChannel channel = MethodChannel('parent_control/device');
+    final bool granted =
+        await channel.invokeMethod<bool>('hasUsagePermission') ?? false;
+    if (!granted) {
+      setState(() => _usage = []);
+      return;
+    }
+
+    try {
+      final List<dynamic>? result =
+          await channel.invokeMethod<List<dynamic>>('getUsageStats');
+      if (result != null) {
+        final usage = result
+            .map((e) => AppUsage.fromMap(Map<dynamic, dynamic>.from(e)))
+            .toList();
+        usage.sort((a, b) => b.usage.compareTo(a.usage));
+        setState(() => _usage = usage);
+      } else {
+        setState(() => _usage = []);
+      }
+    } on PlatformException {
+      setState(() => _usage = []);
     }
   }
 
