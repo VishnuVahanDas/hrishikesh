@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:android_intent_plus/android_intent.dart';
 import '../services/api_service.dart';
 import '../models/app_usage.dart';
 
@@ -26,6 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final allDevices = await ApiService.fetchDevices();
 
     const MethodChannel channel = MethodChannel('parent_control/device');
+    final bool hasPermission =
+        await channel.invokeMethod<bool>('hasUsagePermission') ?? false;
+    if (!hasPermission) {
+      const intent = AndroidIntent(
+        action: 'android.settings.USAGE_ACCESS_SETTINGS',
+      );
+      await intent.launch();
+    }
     String? currentDeviceId;
     try {
       currentDeviceId = await channel.invokeMethod<String>('getDeviceId');
@@ -156,10 +165,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                   if (_usage.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text('App Usage',
-                          style: TextStyle(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text('App Usage (${DateTime.now().toString().split(' ')[0]})',
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                     ListView.builder(

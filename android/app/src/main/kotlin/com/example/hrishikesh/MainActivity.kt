@@ -31,6 +31,10 @@ class MainActivity: FlutterActivity() {
                     }
                     result.success(mapped)
                 }
+                "hasUsagePermission" -> {
+                    val granted = UsageStatsHelper.hasUsagePermission(this)
+                    result.success(granted)
+                }
                 else -> result.notImplemented()
             }
         }
