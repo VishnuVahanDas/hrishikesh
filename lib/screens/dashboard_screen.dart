@@ -55,8 +55,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   timeline: status.timeline,
                   rules: status.rules,
                 );
-                await ref.read(deviceStatusProvider.notifier).updateStatus(newStatus);
-                await ApiService.updateDeviceStatus(newStatus);
+                await ref
+                    .read(deviceStatusProvider.notifier)
+                    .updateStatus(newStatus);
+                await ApiService.updateDeviceStatus(
+                  widget.deviceId,
+                  newStatus.webFiltering,
+                );
               },
               child: const Text('Toggle Web Filtering'),
             ),
