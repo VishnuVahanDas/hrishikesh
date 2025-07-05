@@ -36,6 +36,7 @@ dependencies:
   shared_preferences: ^2.2.2
   android_intent_plus: ^4.0.1
   device_info_plus: ^9.1.1
+  device_apps: ^2.2.0
 
 
 dev_dependencies:
