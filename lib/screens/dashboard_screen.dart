@@ -43,9 +43,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Text('Web Filtering: ${status.webFiltering}'),
             ElevatedButton(
               onPressed: () async {
+                final updatedFlag = !status.webFiltering;
                 final newStatus = DeviceStatus(
                   deviceId: widget.deviceId,
-                  webFiltering: !status.webFiltering,
+                  webFiltering: updatedFlag,
                   // Copy other existing values
                   protectionStatus: status.protectionStatus,
                   appControl: status.appControl,
@@ -60,7 +61,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     .updateStatus(newStatus);
                 await ApiService.updateDeviceStatus(
                   widget.deviceId,
-                  newStatus.webFiltering,
+                  updatedFlag,
                 );
               },
               child: const Text('Toggle Web Filtering'),

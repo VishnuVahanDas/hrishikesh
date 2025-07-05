@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
 import 'package:flutter/services.dart';
+import '../models/device_status.dart';
 
 class ApiService {
   static const _storage = FlutterSecureStorage();
@@ -97,6 +98,24 @@ class ApiService {
     } else {
       return [];
     }
+  }
+
+  /// Fetch the status information for a single device
+  static Future<DeviceStatus?> getDeviceStatus(String deviceId) async {
+    final token = await getAccessToken();
+    if (token == null) return null;
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/device-status/$deviceId/'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return DeviceStatus.fromJson(data);
+    }
+
+    return null;
   }
 
   /// Update device status (active/inactive)
