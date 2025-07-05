@@ -38,7 +38,10 @@ The home screen now features a **+** button that opens a new page
 displaying all user installed applications on the device. System
 packages are excluded automatically, while all other apps - including
 preinstalled Google applications - are listed. Applications without a
-launcher icon are shown using a default Android symbol. Apps are
+launcher icon are shown using a default Android symbol. On Android 11 and
+later the app requires the **QUERY_ALL_PACKAGES** permission to list all
+installed applications. This permission is declared in the Android
+manifest. Apps are
 grouped into the following categories:
 
 - Entertainment
