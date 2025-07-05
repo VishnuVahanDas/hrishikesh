@@ -67,6 +67,7 @@ object UsageStatsHelper {
         val pm = context.packageManager
 
         if (stats.isNotEmpty()) {
+            Log.d("UsageStatsHelper", "Fetched ${stats.size} usage entries")
             for (usage in stats) {
                 if (usage.totalTimeInForeground > 0) {
                     try {

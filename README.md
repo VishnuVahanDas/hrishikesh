@@ -14,3 +14,20 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Usage Access Permission
+
+This application reads app usage statistics on Android devices. Android
+requires users to manually grant the **Usage Access** permission before any
+usage data can be retrieved. If this permission is not granted you may see log
+messages similar to:
+
+```
+W/UsageStatsHelper: No usage data found. Is permission granted?
+```
+
+When launching the app for the first time you will be redirected to the
+"Usage Access" settings screen. Locate **hrishikesh** in that list and toggle
+**Allow usage access** to **ON**. Once enabled, restart the app and usage data
+should start appearing in the logs (for example:
+`UsageStatsHelper: Fetched 25 usage entries`).
