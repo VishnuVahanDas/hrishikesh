@@ -4,15 +4,22 @@ import android.app.AppOpsManager
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.util.Base64
 import android.util.Log
-import java.text.SimpleDateFormat
+import androidx.core.graphics.drawable.toBitmap
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
 data class AppUsageInfo(
     val packageName: String,
-    val totalTimeForeground: Long
+    val totalTimeForeground: Long,
+    val appName: String,
+    val icon: String
 )
 
 object UsageStatsHelper {
@@ -33,6 +40,7 @@ object UsageStatsHelper {
         }
         return mode == AppOpsManager.MODE_ALLOWED
     }
+
     fun getUsageStats(context: Context): List<AppUsageInfo> {
         val usageStatsList = ArrayList<AppUsageInfo>()
 
@@ -53,15 +61,34 @@ object UsageStatsHelper {
             endTime
         )
 
+        val pm = context.packageManager
+
         if (stats.isNotEmpty()) {
             for (usage in stats) {
                 if (usage.totalTimeInForeground > 0) {
-                    usageStatsList.add(
-                        AppUsageInfo(
-                            packageName = usage.packageName,
-                            totalTimeForeground = usage.totalTimeInForeground
+                    try {
+                        val appInfo = pm.getApplicationInfo(usage.packageName, 0)
+                        val label = pm.getApplicationLabel(appInfo).toString()
+                        val drawable = pm.getApplicationIcon(appInfo)
+                        val bitmap: Bitmap = if (drawable is BitmapDrawable) {
+                            drawable.bitmap
+                        } else {
+                            drawable.toBitmap()
+                        }
+                        val stream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        val encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+                        usageStatsList.add(
+                            AppUsageInfo(
+                                packageName = usage.packageName,
+                                totalTimeForeground = usage.totalTimeInForeground,
+                                appName = label,
+                                icon = encoded
+                            )
                         )
-                    )
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        Log.w("UsageStatsHelper", "Package not found: ${usage.packageName}")
+                    }
                 }
             }
         } else {
@@ -71,3 +98,4 @@ object UsageStatsHelper {
         return usageStatsList
     }
 }
+
