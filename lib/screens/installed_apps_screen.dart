@@ -26,12 +26,16 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
 
   Future<void> _loadApps() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
-      includeSystemApps: true,
+      includeSystemApps: false,
       includeAppIcons: true,
+      onlyAppsWithLaunchIntent: true,
     );
 
     apps = apps
-        .where((app) => !app.packageName.startsWith('com.android'))
+        .where((app) =>
+            !app.packageName.startsWith('com.android') &&
+            !app.packageName.startsWith('com.google.android') &&
+            !(app is Application ? (app.systemApp ?? false) : false))
         .toList();
 
     for (final app in apps) {
@@ -69,15 +73,26 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
     if (name.contains('music') ||
         name.contains('video') ||
         name.contains('movie') ||
-        name.contains('tv')) {
+        name.contains('tv') ||
+        name.contains('netflix') ||
+        name.contains('hotstar') ||
+        name.contains('youtube') ||
+        name.contains('prime') ||
+        name.contains('spotify')) {
       return 'Entertainment';
     }
     if (name.contains('facebook') ||
         name.contains('whatsapp') ||
+        name.contains('telegram') ||
         name.contains('twitter') ||
         name.contains('chat') ||
         name.contains('social') ||
-        name.contains('instagram')) {
+        name.contains('instagram') ||
+        name.contains('linkedin') ||
+        name.contains('truecaller') ||
+        name.contains('snapchat') ||
+        name.contains('messenger') ||
+        name.contains('discord')) {
       return 'Social';
     }
     return 'Other';

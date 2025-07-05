@@ -35,12 +35,17 @@ should start appearing in the logs (for example:
 ## Installed Apps View
 
 The home screen now features a **+** button that opens a new page
-displaying all installed applications on the device (excluding packages
-starting with `com.android`). Applications are grouped into the following
-categories:
+displaying all user installed applications on the device. Android system
+packages (for example those starting with `com.android` or
+`com.google.android`) are filtered out automatically. Applications are
+grouped into the following categories:
 
 - Entertainment
 - Gaming
 - Education
 - Social
 - Other
+
+Social apps include popular messengers such as **WhatsApp**, **Telegram**,
+**Instagram**, and **LinkedIn**. Entertainment covers streaming services like
+**Hotstar**, **Netflix**, and similar apps.
