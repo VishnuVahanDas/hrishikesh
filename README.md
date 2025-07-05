@@ -31,3 +31,16 @@ When launching the app for the first time you will be redirected to the
 **Allow usage access** to **ON**. Once enabled, restart the app and usage data
 should start appearing in the logs (for example:
 `UsageStatsHelper: Fetched 25 usage entries`).
+
+## Installed Apps View
+
+The home screen now features a **+** button that opens a new page
+displaying all installed applications on the device (excluding packages
+starting with `com.android`). Applications are grouped into the following
+categories:
+
+- Entertainment
+- Gaming
+- Education
+- Social
+- Other

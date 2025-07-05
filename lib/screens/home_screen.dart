@@ -4,6 +4,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'dart:convert';
 import '../services/api_service.dart';
 import '../models/app_usage.dart';
+import 'installed_apps_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -254,6 +255,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ]
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const InstalledAppsScreen()),
+          );
+        },
+        tooltip: 'Installed Apps',
+        child: const Icon(Icons.add),
       ),
     );
   }
