@@ -92,6 +92,23 @@ object UsageStatsHelper {
                         )
                     } catch (e: PackageManager.NameNotFoundException) {
                         Log.w("UsageStatsHelper", "Package not found: ${usage.packageName}")
+                        val drawable = pm.defaultActivityIcon
+                        val bitmap: Bitmap = if (drawable is BitmapDrawable) {
+                            drawable.bitmap
+                        } else {
+                            drawable.toBitmap()
+                        }
+                        val stream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        val encoded = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+                        usageStatsList.add(
+                            AppUsageInfo(
+                                packageName = usage.packageName,
+                                totalTimeForeground = usage.totalTimeInForeground,
+                                appName = usage.packageName,
+                                icon = encoded
+                            )
+                        )
                     }
                 }
             }
