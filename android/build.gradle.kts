@@ -1,4 +1,5 @@
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.tasks.ProcessLibraryManifest
 
 allprojects {
     repositories {
@@ -23,6 +24,18 @@ subprojects {
         plugins.withId("com.android.library") {
             extensions.configure<LibraryExtension> {
                 namespace = "com.example.device_apps"
+            }
+            tasks.withType<ProcessLibraryManifest>().configureEach {
+                doFirst {
+                    val manifestFile = file("src/main/AndroidManifest.xml")
+                    if (manifestFile.exists()) {
+                        val original = manifestFile.readText()
+                        val cleaned = original.replace("package=\"fr.g123k.deviceapps\"", "")
+                        if (original != cleaned) {
+                            manifestFile.writeText(cleaned)
+                        }
+                    }
+                }
             }
         }
     }
