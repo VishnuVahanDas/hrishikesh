@@ -22,7 +22,13 @@ class MainActivity: FlutterActivity() {
                     result.success(androidId)
                 }
                 "getUsageStats" -> {
-                    val usageList = UsageStatsHelper.getUsageStats(this)
+                    val start = call.argument<Long>("start")
+                    val end = call.argument<Long>("end")
+                    val usageList = if (start != null && end != null) {
+                        UsageStatsHelper.getUsageStats(this, start, end)
+                    } else {
+                        UsageStatsHelper.getUsageStatsForToday(this)
+                    }
                     val mapped = usageList.map { usage ->
                         mapOf(
                             "packageName" to usage.packageName,
@@ -30,6 +36,10 @@ class MainActivity: FlutterActivity() {
                         )
                     }
                     result.success(mapped)
+                }
+                "hasUsagePermission" -> {
+                    val granted = UsageStatsHelper.hasUsagePermission(this)
+                    result.success(granted)
                 }
                 else -> result.notImplemented()
             }
