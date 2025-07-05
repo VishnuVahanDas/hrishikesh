@@ -16,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _devices = [];
   bool _isLoading = true;
   List<AppUsage> _usage = [];
+  Duration _totalScreenTime = Duration.zero;
   DateTime _selectedDate = DateTime.now();
 
   @override
@@ -46,6 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _usage = usage;
+      _totalScreenTime = usage.fold(
+          Duration.zero, (sum, item) => sum + item.usage);
     });
   }
 
@@ -143,6 +146,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _formatTotalScreenTime(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = (duration.inMinutes - hours * 60).toString().padLeft(2, '0');
+    return 'Total Screen Time: ${hours.toString().padLeft(2, '0')}:$minutes';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,6 +223,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     "App Usage (${_selectedDate.toString().split(' ')[0]})",
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  _formatTotalScreenTime(_totalScreenTime),
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
               ListView.builder(
                 shrinkWrap: true,
