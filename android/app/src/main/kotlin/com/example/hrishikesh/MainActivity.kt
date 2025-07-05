@@ -26,7 +26,9 @@ class MainActivity: FlutterActivity() {
                     val mapped = usageList.map { usage ->
                         mapOf(
                             "packageName" to usage.packageName,
-                            "usage" to usage.totalTimeForeground
+                            "usage" to usage.totalTimeForeground,
+                            "appName" to usage.appName,
+                            "icon" to usage.icon
                         )
                     }
                     result.success(mapped)

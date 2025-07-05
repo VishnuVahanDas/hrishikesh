@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:android_intent_plus/android_intent.dart';
+import 'dart:convert';
 import '../services/api_service.dart';
 import '../models/app_usage.dart';
 
@@ -182,7 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             (u.usage.inMinutes - hours * 60).toString().padLeft(2, '0');
                         final duration = '${hours.toString().padLeft(2, '0')}:$minutes';
                         return ListTile(
-                          title: Text(u.packageName),
+                          leading: CircleAvatar(
+                            backgroundImage: MemoryImage(base64Decode(u.icon)),
+                          ),
+                          title: Text(u.appName),
+                          subtitle: Text(u.packageName),
                           trailing: Text(duration),
                         );
                       },
