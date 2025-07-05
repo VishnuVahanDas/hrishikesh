@@ -57,8 +57,6 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
             return 'Entertainment';
           case ApplicationCategory.social:
             return 'Social';
-          case ApplicationCategory.education:
-            return 'Education';
           default:
             break;
         }
