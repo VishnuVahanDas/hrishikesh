@@ -1,3 +1,5 @@
+import com.android.build.gradle.LibraryExtension
+
 allprojects {
     repositories {
         google()
@@ -14,6 +16,16 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    afterEvaluate {
+        if (name == "device_apps") {
+            extensions.findByType<LibraryExtension>()?.apply {
+                namespace = "com.example.device_apps"
+            }
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
