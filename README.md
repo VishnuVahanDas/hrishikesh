@@ -37,7 +37,8 @@ should start appearing in the logs (for example:
 The home screen now features a **+** button that opens a new page
 displaying all user installed applications on the device. Android system
 packages (for example those starting with `com.android` or
-`com.google.android`) are filtered out automatically. Applications are
+`com.google.android`) are filtered out automatically. Applications without a
+launcher icon are still shown using a default Android symbol. Apps are
 grouped into the following categories:
 
 - Entertainment
