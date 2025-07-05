@@ -35,8 +35,6 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
 
     apps = apps
         .where((app) =>
-            !app.packageName.startsWith('com.android') &&
-            !app.packageName.startsWith('com.google.android') &&
             !(app is Application ? (app.systemApp ?? false) : false))
         .toList();
 
