@@ -28,7 +28,9 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
     List<Application> apps = await DeviceApps.getInstalledApplications(
       includeSystemApps: false,
       includeAppIcons: true,
-      onlyAppsWithLaunchIntent: true,
+      // Include apps even if they do not expose a launch intent so that
+      // non-launchable user installed packages are also visible.
+      onlyAppsWithLaunchIntent: false,
     );
 
     apps = apps
@@ -113,7 +115,7 @@ class _InstalledAppsScreenState extends State<InstalledAppsScreen> {
                     return ListTile(
                       leading: app is ApplicationWithIcon
                           ? Image.memory(app.icon, width: 32, height: 32)
-                          : null,
+                          : const Icon(Icons.android),
                       title: Text(app.appName),
                       subtitle: Text(app.packageName),
                     );
