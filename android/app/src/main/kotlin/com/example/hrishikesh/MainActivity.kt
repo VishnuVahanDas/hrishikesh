@@ -22,7 +22,8 @@ class MainActivity: FlutterActivity() {
                     result.success(androidId)
                 }
                 "getUsageStats" -> {
-                    val usageList = UsageStatsHelper.getUsageStats(this)
+                    val dateMillis = call.argument<Long>("dateMillis")
+                    val usageList = UsageStatsHelper.getUsageStats(this, dateMillis)
                     val mapped = usageList.map { usage ->
                         mapOf(
                             "packageName" to usage.packageName,

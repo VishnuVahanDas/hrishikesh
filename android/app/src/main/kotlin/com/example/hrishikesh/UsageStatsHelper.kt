@@ -41,19 +41,22 @@ object UsageStatsHelper {
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
-    fun getUsageStats(context: Context): List<AppUsageInfo> {
+    fun getUsageStats(context: Context, dateMillis: Long?): List<AppUsageInfo> {
         val usageStatsList = ArrayList<AppUsageInfo>()
 
         val usageStatsManager =
             context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
         val calendar = Calendar.getInstance()
-        val endTime = calendar.timeInMillis
+        if (dateMillis != null && dateMillis > 0) {
+            calendar.timeInMillis = dateMillis
+        }
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val startTime = calendar.timeInMillis
+        val endTime = startTime + 24L * 60 * 60 * 1000
 
         val stats: List<UsageStats> = usageStatsManager.queryUsageStats(
             UsageStatsManager.INTERVAL_DAILY,

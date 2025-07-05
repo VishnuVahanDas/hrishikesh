@@ -21,7 +21,7 @@ class AppMonitoringService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val usageList = UsageStatsHelper.getUsageStats(this)
+        val usageList = UsageStatsHelper.getUsageStats(this, null)
         for (app in usageList) {
             Log.d("AppUsage", "Package: ${app.packageName}, Time: ${app.totalTimeForeground / 1000} sec")
         }

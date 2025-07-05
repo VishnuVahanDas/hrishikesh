@@ -16,11 +16,52 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _devices = [];
   bool _isLoading = true;
   List<AppUsage> _usage = [];
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _initDeviceLogic();
+  }
+
+  Future<void> _fetchUsage() async {
+    const MethodChannel channel = MethodChannel('parent_control/device');
+    List<AppUsage> usage = [];
+    try {
+      final startOfDay = DateTime(
+          _selectedDate.year, _selectedDate.month, _selectedDate.day);
+      final List<dynamic>? result = await channel.invokeMethod<List<dynamic>>(
+        'getUsageStats',
+        {'dateMillis': startOfDay.millisecondsSinceEpoch},
+      );
+      if (result != null) {
+        usage = result
+            .map((e) => AppUsage.fromMap(Map<dynamic, dynamic>.from(e)))
+            .toList();
+        usage.sort((a, b) => b.usage.compareTo(a.usage));
+      }
+    } on PlatformException {
+      usage = [];
+    }
+
+    setState(() {
+      _usage = usage;
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      await _fetchUsage();
+    }
   }
 
   void _initDeviceLogic() async {
@@ -43,19 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
       currentDeviceId = null;
     }
 
-    List<AppUsage> usage = [];
-    try {
-      final List<dynamic>? result =
-      await channel.invokeMethod<List<dynamic>>('getUsageStats');
-      if (result != null) {
-        usage = result
-            .map((e) => AppUsage.fromMap(Map<dynamic, dynamic>.from(e)))
-            .toList();
-        usage.sort((a, b) => b.usage.compareTo(a.usage));
-      }
-    } on PlatformException {
-      usage = [];
-    }
+    await _fetchUsage();
 
     if (currentDeviceId != null) {
       final filtered = allDevices
@@ -63,13 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
           .toList();
       setState(() {
         _devices = filtered;
-        _usage = usage;
         _isLoading = false;
       });
     } else {
       setState(() {
         _devices = allDevices;
-        _usage = usage;
         _isLoading = false;
       });
     }
@@ -165,10 +192,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                        "Selected: ${_selectedDate.toString().split(' ')[0]}"),
+                  ),
+                  ElevatedButton(
+                    onPressed: _pickDate,
+                    child: const Text('Choose Date'),
+                  )
+                ],
+              ),
+            ),
             if (_usage.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text('App Usage (${DateTime.now().toString().split(' ')[0]})',
+                child: Text(
+                    "App Usage (${_selectedDate.toString().split(' ')[0]})",
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold)),
               ),
