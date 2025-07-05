@@ -98,3 +98,4 @@ object UsageStatsHelper {
         return usageStatsList
     }
 }
+
