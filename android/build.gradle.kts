@@ -19,9 +19,9 @@ subprojects {
 }
 
 subprojects {
-    afterEvaluate {
-        if (name == "device_apps") {
-            extensions.findByType<LibraryExtension>()?.apply {
+    if (name == "device_apps") {
+        plugins.withId("com.android.library") {
+            extensions.configure<LibraryExtension> {
                 namespace = "com.example.device_apps"
             }
         }
