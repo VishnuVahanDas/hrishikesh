@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<AppUsage> usage = [];
     try {
       final List<dynamic>? result =
-          await channel.invokeMethod<List<dynamic>>('getUsageStats');
+      await channel.invokeMethod<List<dynamic>>('getUsageStats');
       if (result != null) {
         usage = result
             .map((e) => AppUsage.fromMap(Map<dynamic, dynamic>.from(e)))
@@ -123,79 +123,79 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_devices.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: Text("No devices found.")),
-                    )
-                  else
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _devices.length,
-                      itemBuilder: (context, index) {
-                        final d = _devices[index];
-                        return ListTile(
-                          title: Text(d['name'] ?? 'No name'),
-                          subtitle: Text("ID: ${d['device_id'] ?? 'Unknown'}"),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                d['is_active'] == true
-                                    ? Icons.check_circle
-                                    : Icons.block,
-                                color: d['is_active'] == true
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.sync),
-                                tooltip: "Toggle Status",
-                                onPressed: () => _toggleDeviceStatus(
-                                  d['device_id'],
-                                  d['is_active'],
-                                ),
-                              ),
-                            ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_devices.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: Text("No devices found.")),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _devices.length,
+                itemBuilder: (context, index) {
+                  final d = _devices[index];
+                  return ListTile(
+                    title: Text(d['name'] ?? 'No name'),
+                    subtitle: Text("ID: ${d['device_id'] ?? 'Unknown'}"),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          d['is_active'] == true
+                              ? Icons.check_circle
+                              : Icons.block,
+                          color: d['is_active'] == true
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.sync),
+                          tooltip: "Toggle Status",
+                          onPressed: () => _toggleDeviceStatus(
+                            d['device_id'],
+                            d['is_active'],
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  if (_usage.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text('App Usage (${DateTime.now().toString().split(' ')[0]})',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _usage.length,
-                      itemBuilder: (context, index) {
-                        final u = _usage[index];
-                        final hours = u.usage.inHours;
-                        final minutes =
-                            (u.usage.inMinutes - hours * 60).toString().padLeft(2, '0');
-                        final duration = '${hours.toString().padLeft(2, '0')}:$minutes';
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: MemoryImage(base64Decode(u.icon)),
-                          ),
-                          title: Text(u.appName),
-                          subtitle: Text(u.packageName),
-                          trailing: Text(duration),
-                        );
-                      },
-                    ),
-                  ]
-                ],
+                  );
+                },
               ),
-            ),
+            if (_usage.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text('App Usage (${DateTime.now().toString().split(' ')[0]})',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _usage.length,
+                itemBuilder: (context, index) {
+                  final u = _usage[index];
+                  final hours = u.usage.inHours;
+                  final minutes =
+                  (u.usage.inMinutes - hours * 60).toString().padLeft(2, '0');
+                  final duration = '${hours.toString().padLeft(2, '0')}:$minutes';
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: MemoryImage(base64Decode(u.icon)),
+                    ),
+                    title: Text(u.appName),
+                    subtitle: Text(u.packageName),
+                    trailing: Text(duration),
+                  );
+                },
+              ),
+            ]
+          ],
+        ),
+      ),
     );
   }
 }
