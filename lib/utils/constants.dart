@@ -1,2 +1,2 @@
-// TODO Implement this library.
+// Application constants
 const String baseUrl = 'https://vishnuvahan.com/api';
